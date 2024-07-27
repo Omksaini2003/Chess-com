@@ -2,15 +2,29 @@
   "name": "chess-monorepo",
   "version": "1.0.0",
   "main": "index.js",
-  "workspaces":[
+  "workspaces": [
     "backend",
     "frontend"
   ],
   "scripts": {
+    "build": "npm run build --workspace=backend",
+    "start:backend": "npm run start --workspace=backend",
+    "start:frontend": "npm run dev --workspace=frontend",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "braces": "^3.0.3",
+    "fill-range": "^7.1.1",
+    "is-number": "^7.0.0",
+    "to-regex-range": "^5.0.1",
+    "undici-types": "^5.26.5",
+    "ws": "^8.18.0"
+  },
   "description": ""
 }
