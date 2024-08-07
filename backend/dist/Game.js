@@ -31,6 +31,25 @@ class Game {
         // is the move valid
         // update board
         // push the move
+        //won by timeout
+        if (move.from === "" && move.to === "") {
+            this.player1.send(JSON.stringify({
+                type: messages_1.GAME_OVER,
+                payload: {
+                    move: move,
+                    winner: this.board.turn() === "w" ? "black" : "white"
+                }
+            }));
+            this.player2.send(JSON.stringify({
+                type: messages_1.GAME_OVER,
+                payload: {
+                    move: move,
+                    winner: this.board.turn() === "w" ? "black" : "white"
+                }
+            }));
+            return;
+        }
+        //making move
         try {
             this.board.move(move);
             this.moves.push(move);
@@ -65,6 +84,14 @@ class Game {
                 type: messages_1.MOVE,
                 payload: {
                     move: move,
+                    toSelf: false,
+                }
+            }));
+            this.player2.send(JSON.stringify({
+                type: messages_1.MOVE,
+                payload: {
+                    move: move,
+                    toSelf: true,
                 }
             }));
         }
@@ -74,6 +101,14 @@ class Game {
                 type: messages_1.MOVE,
                 payload: {
                     move: move,
+                    toSelf: false,
+                }
+            }));
+            this.player1.send(JSON.stringify({
+                type: messages_1.MOVE,
+                payload: {
+                    move: move,
+                    toSelf: true,
                 }
             }));
         }

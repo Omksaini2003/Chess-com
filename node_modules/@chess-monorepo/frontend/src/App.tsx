@@ -7,8 +7,7 @@ import { Game } from './screens/Game';
 function App() {
 
   return (
-    <>
-    <div>
+    <div className="flex-1 flex items-center justify-center p-4">
     <BrowserRouter>
       <Routes>
         <Route path="/" element= {<Landing/>}/>
@@ -16,7 +15,6 @@ function App() {
       </Routes>
     </BrowserRouter>
     </div>
-    </>
   )
 }
 

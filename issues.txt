@@ -1,0 +1,16 @@
+if game over by time out, it doesnt restart properly after that
+you cant play now again 
+
+beautify timer, make it customisable by players like in chees dot com
+
+move history doesnt scroll down automatically on update
+
+////////
+
+move history,
+user auth,
+db to store stuff like move history and users info,
+
+
+
+

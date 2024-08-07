@@ -45,6 +45,27 @@ export class Game{
 
             // update board
             // push the move
+
+            //won by timeout
+            if(move.from === "" && move.to === ""){
+                  this.player1.send(JSON.stringify({
+                        type: GAME_OVER,
+                        payload: {
+                              move:move,
+                              winner: this.board.turn() === "w" ? "black" : "white"
+                        }
+                  }))
+                  this.player2.send(JSON.stringify({
+                        type: GAME_OVER,
+                        payload: {
+                              move: move,
+                              winner: this.board.turn() === "w" ? "black" : "white"
+                        }
+                  }))
+                  return;
+            }
+
+            //making move
             try{
                   this.board.move(move);
                   this.moves.push(move);
@@ -83,16 +104,32 @@ export class Game{
                         type: MOVE,
                         payload: {
                               move: move,
+                              toSelf: false,
                         }
                   }))
+                  // this.player2.send(JSON.stringify({
+                  //       type: MOVE,
+                  //       payload: {
+                  //             move: move,
+                  //             toSelf: true,
+                  //       }
+                  // }));
             } else {
                   console.log("player1- white emits")
                   this.player2.send(JSON.stringify({
                         type: MOVE,
                         payload: {
                               move: move,
+                              toSelf: false,
                         }
                   }))
+                  // this.player1.send(JSON.stringify({
+                  //       type: MOVE,
+                  //       payload: {
+                  //             move: move,
+                  //             toSelf: true,
+                  //       }
+                  // }));
             }
       }
 
