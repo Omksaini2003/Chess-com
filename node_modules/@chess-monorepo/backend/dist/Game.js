@@ -4,6 +4,11 @@ exports.Game = void 0;
 const chess_js_1 = require("chess.js");
 const messages_1 = require("./messages");
 class Game {
+    notifyGameOver() {
+        if (this.onGameOverCallback) {
+            this.onGameOverCallback();
+        }
+    }
     constructor(player1, player2) {
         this.moveCount = 0;
         this.player1 = player1;
@@ -26,11 +31,15 @@ class Game {
             },
         }));
     }
+    setOnGameOverCallback(callback) {
+        this.onGameOverCallback = callback;
+    }
     makeMove(socket, move) {
         console.log("make move");
         if (move.from === "" && move.to === "") {
             console.log("Time out");
-            this.sendGameOverMessage();
+            this.sendGameOverMessage(move);
+            this.notifyGameOver();
             return;
         }
         try {
@@ -45,7 +54,8 @@ class Game {
             return;
         }
         if (this.board.isGameOver()) {
-            this.sendGameOverMessage();
+            this.sendGameOverMessage(move);
+            this.notifyGameOver();
             return;
         }
         this.sendMoveToPlayers(move);
@@ -88,17 +98,20 @@ class Game {
             }));
         }
     }
-    sendGameOverMessage() {
+    sendGameOverMessage(move) {
+        console.log(move);
         const winner = this.board.turn() === "w" ? "black" : "white";
         this.player1.send(JSON.stringify({
             type: messages_1.GAME_OVER,
             payload: {
+                move: move,
                 winner: winner,
             },
         }));
         this.player2.send(JSON.stringify({
             type: messages_1.GAME_OVER,
             payload: {
+                move: move,
                 winner: winner,
             },
         }));

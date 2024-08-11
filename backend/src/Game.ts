@@ -12,6 +12,14 @@ export class Game {
       private moves: { move: { from: string; to: string }; playedBy: string }[];
       private startTime: Date;
       private moveCount = 0;
+     
+      private onGameOverCallback?: () => void;
+      private notifyGameOver() {
+            if (this.onGameOverCallback) {
+                this.onGameOverCallback();
+            }
+      }
+        
 
       constructor(player1: WebSocket, player2: WebSocket) {
             this.player1 = player1;
@@ -41,12 +49,17 @@ export class Game {
             );
       }
 
+      setOnGameOverCallback(callback: () => void) {
+            this.onGameOverCallback = callback;
+      }
+
       makeMove(socket: WebSocket, move: { from: string; to: string }) {
             console.log("make move");
 
             if (move.from === "" && move.to === "") {
                   console.log("Time out");
                   this.sendGameOverMessage(move);
+                  this.notifyGameOver();
                   return;
             }
 
@@ -65,6 +78,7 @@ export class Game {
 
             if (this.board.isGameOver()) {
                   this.sendGameOverMessage(move);
+                  this.notifyGameOver();
                   return;
             }
 
@@ -117,13 +131,14 @@ export class Game {
             }
       }
 
-      private sendGameOverMessage(move) {
+      private sendGameOverMessage(move: { from: string; to: string }) {
+            console.log(move);
             const winner = this.board.turn() === "w" ? "black" : "white";
             this.player1.send(
                   JSON.stringify({
                         type: GAME_OVER,
                         payload: {
-                              move:  move,
+                              move: move,
                               winner: winner,
                         },
                   })
