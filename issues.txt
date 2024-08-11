@@ -15,15 +15,5 @@ db to store stuff like move history and users info,
 
 ///// fixed temp
 
-moveHist is getting printed continuously at frontend:{
-      countdown comp m gadbadi h kch
-      use comment karne pe everything is working fine :{
-            React.memo ed other components so its fixed temporarily
-            long term solution:{
-                  need to make countdown parent state independent
-                  taki parent update na ho bar bar ispe update ane ki vjh se
-            }
-      }
-}
 
 

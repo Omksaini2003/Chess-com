@@ -23,27 +23,20 @@ interface GameProps {
 
 export const Game: React.FC<GameProps> = ({ user }) => {
 	// const navigate = useNavigate();
-	console.log(user);
+	// console.log(user);
+
 	const socket = useSocket();
-	// const [chess, setChess] = useState(new Chess());
+
 	const [chess, setChess] = useState(new Chess());
 	const [board, setBoard] = useState(chess.board());
 	const [started, setStarted] = useState(false);
-
 	const [color, setColor] = useState("w");
-
 	const [moveHist, setMoveHist] = useState([]);
-
-
 	//
 	const initialMinutes = 0.5;
-	// const [seconds, setSeconds] = useState(initialMinutes * 60);
 	const [isCountdownActive, setIsCountdownActive] = useState(false);
 	const [shouldResetCountdown, setShouldResetCountdown] = useState(false);
 
-	// const onTick = useCallback(() => {
-	//   setSeconds(prevSeconds => prevSeconds - 1);
-	// }, []);
 
 	const onComplete = useCallback(() => {
 		setIsCountdownActive(false);
@@ -74,6 +67,8 @@ export const Game: React.FC<GameProps> = ({ user }) => {
 		}
 	}, [shouldResetCountdown]);
 
+
+
 	const handleMessage = useCallback((message) => {
 		switch (message.type) {
 			case INIT_GAME:
@@ -90,7 +85,7 @@ export const Game: React.FC<GameProps> = ({ user }) => {
 
 				break;
 			case MOVE:
-				console.log(message);
+				// console.log(message);
 				try {
 					setIsCountdownActive(!message.payload.toSelf);
 					chess.move(message.payload.move);
@@ -114,7 +109,7 @@ export const Game: React.FC<GameProps> = ({ user }) => {
 					// setMoveHist(message.payload.moves);
 				}
 				catch (e) {
-					console.log(e);
+					// console.log(e);
 				}
 				setBoard(chess.board());
 				// setMoves(message.payload.move);
@@ -126,13 +121,13 @@ export const Game: React.FC<GameProps> = ({ user }) => {
 	},[chess,color]);
 
 	useEffect(() => {
-		console.log("useEffect");
+		// console.log("useEffect");
 
 		if (!socket) return;
 
 		socket.onmessage = (event) => {
 			const message = JSON.parse(event.data);
-			console.log(message)
+			// console.log(message)
 
 			handleMessage(message);
 		}
@@ -140,6 +135,7 @@ export const Game: React.FC<GameProps> = ({ user }) => {
 
 	// const memoizedBoard = useMemo(() => {board}, [board]);
 
+	
 	if (!socket) return <div>Connecting...</div>
 
 	return (
