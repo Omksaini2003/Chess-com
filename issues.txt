@@ -1,5 +1,3 @@
-if game over by time out, it doesnt restart properly after that
-you cant play now again 
 also check at end if last move is played in case of checkmate
 
 scroll bottom feature not working in moveHist
