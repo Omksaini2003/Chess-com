@@ -17,6 +17,7 @@ const Countdown: React.FC<CountdownProps> = ({ initialMinutes, seconds, isActive
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
+
     if (isActive && seconds > 0) {
       interval = setInterval(() => {
         onTick();
@@ -24,6 +25,7 @@ const Countdown: React.FC<CountdownProps> = ({ initialMinutes, seconds, isActive
     } else if (seconds === 0) {
       onComplete();
     }
+    
     return () => {
       if (interval) clearInterval(interval);
     };

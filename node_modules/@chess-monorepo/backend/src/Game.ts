@@ -6,8 +6,11 @@ export class Game{
 
       public player1: WebSocket;
       public player2: WebSocket;
+      public player1Color: string;
+      public player2Color: string;
+
       private board: Chess;
-      private moves: {from: string,to: string}[];
+      private moves: {move:{from: string,to: string}, playedBy: string}[];
       private startTime: Date;
  
       private moveCount = 0;
@@ -16,6 +19,9 @@ export class Game{
       constructor(player1: WebSocket, player2: WebSocket){
             this.player1 = player1;
             this.player2 = player2;
+            this.player1Color = "w";
+            this.player2Color = "b";
+
             this.board = new Chess();
             this.moves =  [];
             this.startTime = new Date();
@@ -46,7 +52,7 @@ export class Game{
             // update board
             // push the move
 
-            //won by timeout
+            //WON by timeout
             if(move.from === "" && move.to === ""){
                   this.player1.send(JSON.stringify({
                         type: GAME_OVER,
@@ -65,10 +71,14 @@ export class Game{
                   return;
             }
 
-            //making move
+            //making MOVE
             try{
+                  const playedBy = this.board.turn();
                   this.board.move(move);
-                  this.moves.push(move);
+
+                  this.moves.push({move:move, playedBy: playedBy}); // registering move
+                  console.log(this.moves);
+
                   this.moveCount++;
             }
             catch(e){
@@ -76,7 +86,7 @@ export class Game{
                   return;
             }
 
-            // check if the game is over
+            // CHECK if the game is over
 
             if(this.board.isGameOver()){
                   this.player1.send(JSON.stringify({
@@ -96,7 +106,7 @@ export class Game{
                   return;
             }
 
-            // send updated board to both players
+            // send UPDATED board to both players
 
             if(this.moveCount % 2 === 0){
                   console.log("player2- black emits")
@@ -104,32 +114,36 @@ export class Game{
                         type: MOVE,
                         payload: {
                               move: move,
-                              toSelf: false,
+                              moves : this.moves,
+                              toSelf: false, //for timer on/off
                         }
                   }))
-                  // this.player2.send(JSON.stringify({
-                  //       type: MOVE,
-                  //       payload: {
-                  //             move: move,
-                  //             toSelf: true,
-                  //       }
-                  // }));
+                  this.player2.send(JSON.stringify({
+                        type: MOVE,
+                        payload: {
+                              move: move,
+                              moves: this.moves,
+                              toSelf: true,
+                        }
+                  }));
             } else {
                   console.log("player1- white emits")
                   this.player2.send(JSON.stringify({
                         type: MOVE,
                         payload: {
                               move: move,
+                              moves: this.moves,
                               toSelf: false,
                         }
                   }))
-                  // this.player1.send(JSON.stringify({
-                  //       type: MOVE,
-                  //       payload: {
-                  //             move: move,
-                  //             toSelf: true,
-                  //       }
-                  // }));
+                  this.player1.send(JSON.stringify({
+                        type: MOVE,
+                        payload: {
+                              move: move,
+                              moves: this.moves,
+                              toSelf: true,
+                        }
+                  }));
             }
       }
 

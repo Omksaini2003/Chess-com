@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import './App.css'
 import { Landing } from './screens/Landing';
 import { Game } from './screens/Game';
+import GameWrapper from "./GameWrapper";
 
 function App() {
 
@@ -11,7 +12,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element= {<Landing/>}/>
-        <Route path="/game" element= {<Game/>}/>
+        <Route path="/login" element={<GameWrapper/>}/>
+        <Route path="/game" element= {<Game user={null} />}/>
       </Routes>
     </BrowserRouter>
     </div>

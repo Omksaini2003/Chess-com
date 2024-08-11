@@ -8,6 +8,8 @@ class Game {
         this.moveCount = 0;
         this.player1 = player1;
         this.player2 = player2;
+        this.player1Color = "w";
+        this.player2Color = "b";
         this.board = new chess_js_1.Chess();
         this.moves = [];
         this.startTime = new Date();
@@ -51,8 +53,10 @@ class Game {
         }
         //making move
         try {
+            const playedBy = this.board.turn();
             this.board.move(move);
-            this.moves.push(move);
+            this.moves.push({ move: move, playedBy: playedBy });
+            console.log(this.moves);
             this.moveCount++;
         }
         catch (e) {
@@ -84,13 +88,15 @@ class Game {
                 type: messages_1.MOVE,
                 payload: {
                     move: move,
-                    toSelf: false,
+                    moves: this.moves,
+                    toSelf: false, //for timer on/off
                 }
             }));
             this.player2.send(JSON.stringify({
                 type: messages_1.MOVE,
                 payload: {
                     move: move,
+                    moves: this.moves,
                     toSelf: true,
                 }
             }));
@@ -101,6 +107,7 @@ class Game {
                 type: messages_1.MOVE,
                 payload: {
                     move: move,
+                    moves: this.moves,
                     toSelf: false,
                 }
             }));
@@ -108,6 +115,7 @@ class Game {
                 type: messages_1.MOVE,
                 payload: {
                     move: move,
+                    moves: this.moves,
                     toSelf: true,
                 }
             }));

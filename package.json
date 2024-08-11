@@ -23,6 +23,7 @@
     "braces": "^3.0.3",
     "fill-range": "^7.1.1",
     "is-number": "^7.0.0",
+    "react-google-login": "^5.2.2",
     "to-regex-range": "^5.0.1",
     "undici-types": "^5.26.5",
     "ws": "^8.18.0"

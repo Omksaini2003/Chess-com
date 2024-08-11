@@ -19,9 +19,16 @@ export const Landing =() => {
                               </div>
                               <div className="mt-4 flex justify-center">
                                     <Button onClick={()=>{
+                                          navigate("/login")
+                                    }}>
+                                          Login
+                                    </Button>
+                              </div>
+                              <div className="mt-4 flex justify-center">
+                                    <Button onClick={()=>{
                                           navigate("/game")
                                     }}>
-                                          Play Now
+                                          Play As Guest
                                     </Button>
                               </div>
                         </div>

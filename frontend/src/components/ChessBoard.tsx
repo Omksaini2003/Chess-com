@@ -1,10 +1,10 @@
 import { Color, PieceSymbol, Square } from "chess.js";
 import { useState } from "react";
 import { MOVE } from "../screens/Game";
+import React from "react";
 
-export const ChessBoard = ({ color, socket, board, 
-      setBoard, chess, 
-      moveHist, setMoveHist} :{
+export const ChessBoard = React.memo(({ color, socket, board, } :
+      {
       color : string;
       socket : WebSocket;
       board: ({
@@ -12,22 +12,14 @@ export const ChessBoard = ({ color, socket, board,
           type: PieceSymbol;
           color: Color;
       } | null)[][];
-      setBoard: any;
-      chess: any;
-      moveHist: ({
-            move: {
-                  from: string,
-                  to: string
-            },
-            playedby: string
-      });
-      setMoveHist: any;
 }) => {
 
       const [from, setFrom] = useState<null | {square: Square,type: PieceSymbol,color: Color}>(null);
 
       // const rotation = (color === 'w' ? 0 : 180);
       const isWhite = color === 'w';
+
+      console.log("chessboard");
       
       return(
             <div className="chessboard-container w-[80vw] h-[80vw] max-w-[435px] max-h-[435px]">
@@ -57,15 +49,15 @@ export const ChessBoard = ({ color, socket, board,
                                                                   move: move,
                                                             }
                                                       }))
-                                                      moveHist.push({move: move, playedby: color })
+                                                      // moveHist.push({move: move, playedby: color })
                                                       console.log("message sent")
 
                                                       setFrom(null)
-                                                      chess.move({
-                                                                  from: from.square,
-                                                                  to: squareRepresentation
-                                                            });
-                                                      setBoard(chess.board());
+                                                      // chess.move({
+                                                      //             from: from.square,
+                                                      //             to: squareRepresentation
+                                                      //       });
+                                                      // setBoard(chess.board());
                                                       // setIsActive(true);
                                                 }
                                                 catch(e){
@@ -99,7 +91,7 @@ export const ChessBoard = ({ color, socket, board,
             </div>
             </div>
       )
-}
+});
 
 
 

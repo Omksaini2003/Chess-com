@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 
-export const MoveHist = ({moveHist}:{moveHist: [{move:{
+export const MoveHist = React.memo(({moveHist}:{moveHist: [{move:{
       from: string,
       to: string
-}, playedby: string}]}) => {
+}, playedBy: string}]}) => {
       const scrollRef = useRef<HTMLDivElement | null>(null);
 
       useEffect(() => {
@@ -15,12 +15,13 @@ export const MoveHist = ({moveHist}:{moveHist: [{move:{
             scrollToBottom();
 
             // And then scroll again after a short delay
-            const timeoutId = setTimeout(scrollToBottom, 100);
+            const timeoutId = setTimeout(scrollToBottom, 100000);
 
             // Cleanup the timeout
             return () => clearTimeout(timeoutId);
       }, [moveHist]);
 
+      console.log("moveHist");
       return (
         <div 
           ref={scrollRef}
@@ -28,16 +29,16 @@ export const MoveHist = ({moveHist}:{moveHist: [{move:{
         >
           {
             moveHist.map((item, i) => {
-              const colClass = i % 2 === 0 ? "bg-white" : "bg-green-800 text-white";
+              const colClass = item.playedBy === 'w' ? "bg-white" : "bg-green-800 text-white";
               return (
                 <p key={i} className={`${colClass} px-2 py-1`}>
-                  {i+1}. {item.playedby} {item.move.from} - {item.move.to}
+                  {i+1}. {item.playedBy} {item.move.from} - {item.move.to}
                 </p>
               );
             })
           }
         </div>
       );
-}
+});
 
 // scroll bottom feature not working

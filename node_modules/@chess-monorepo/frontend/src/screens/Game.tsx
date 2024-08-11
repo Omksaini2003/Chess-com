@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
+import { useSocket } from "../hooks/useSockets"
+import React from "react";
+import {Chess} from "chess.js";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
 import { Button } from "../components/Button"
 import { ChessBoard } from "../components/ChessBoard"
-import { useSocket } from "../hooks/useSockets"
-import {Chess} from "chess.js";
-import Countdown from "../components/Countdown";
 import { MoveHist } from "../components/MoveHist";
+import CountdownWrapper from "../components/CountdownWrapper";
 
 // import { useNavigate } from "react-router-dom"
 
@@ -14,9 +16,14 @@ export const GAME_OVER = "game_over";
 
 // export const [moves, setMoves] = useState([]);
 
-export const Game =() =>{
-      // const navigate = useNavigate();
 
+interface GameProps {
+      user: any;
+}
+
+export const Game: React.FC<GameProps> = ({user}) =>{
+      // const navigate = useNavigate();
+      console.log(user);
       const socket = useSocket();
       // const [chess, setChess] = useState(new Chess());
       const [chess, setChess] = useState(new Chess());
@@ -30,15 +37,16 @@ export const Game =() =>{
 
 //
       const initialMinutes = 0.5;
-      const [seconds, setSeconds] = useState(initialMinutes * 60);
-      const [isActive, setIsActive] = useState(false);
+      // const [seconds, setSeconds] = useState(initialMinutes * 60);
+      const [isCountdownActive, setIsCountdownActive] = useState(false);
+      const [shouldResetCountdown, setShouldResetCountdown] = useState(false);
 
-      const onTick = useCallback(() => {
-        setSeconds(prevSeconds => prevSeconds - 1);
-      }, []);
+      // const onTick = useCallback(() => {
+      //   setSeconds(prevSeconds => prevSeconds - 1);
+      // }, []);
 
       const onComplete = useCallback(() => {
-        setIsActive(false);
+        setIsCountdownActive(false);
         socket?.send(JSON.stringify({
                   type: MOVE,
                   payload: {
@@ -50,17 +58,23 @@ export const Game =() =>{
         }));
       }, [socket]);
 
-
+      const countdownComponent = useMemo(() => (
+            <CountdownWrapper
+            initialMinutes={initialMinutes}
+            isActive={isCountdownActive}
+            onComplete={onComplete}
+            shouldReset={shouldResetCountdown}
+            />
+      ),[shouldResetCountdown,isCountdownActive, onComplete]);
 
       useEffect(() => {
-
-            const reset = () => {
-                  setSeconds(initialMinutes * 60);
-                  setIsActive(false);
-            };
+            console.log("useEffect");
+            // const reset = () => {
+            //       setSeconds(initialMinutes * 60);
+            //       setIsActive(false);
+            // };
 
             if (!socket) return;
-            // console.log("useEffect");
 
             socket.onmessage = (event) => {
                   const message = JSON.parse(event.data);
@@ -76,19 +90,18 @@ export const Game =() =>{
 
                               console.log("Game initialized frontend");
 
-                              reset();
-                              if(message.payload.color === "w"){
-                                    setIsActive(true);
-                              }
+                              setShouldResetCountdown(true);
+                              setIsCountdownActive(message.payload.color === "w");
 
                               break;
                         case MOVE:
                               console.log(message);
                               try{
-                                    setIsActive(!message.payload.toSelf);
+                                    setIsCountdownActive(!message.payload.toSelf);
                                     chess.move(message.payload.move);
-                                    const temp = {move: message.payload.move, playedby: (color === "b"  ? "w":"b")};
-                                    moveHist.push(temp);
+                                    // const temp = {moves: message.payload.moves, playedby: (color === "b"  ? "w":"b")};
+                                    // const temp = {moves: message.payload.moves};
+                                    setMoveHist(message.payload.moves);
                                     
                                     setBoard(chess.board());
                                     // setMoves(message.payload.move);
@@ -102,19 +115,28 @@ export const Game =() =>{
                                     chess.move(message.payload.move);
                                     const temp = {move: message.payload.move, playedby: (color === "b"  ? "w":"b")};
                                     moveHist.push(temp);
+                                    // setMoveHist(message.payload.moves);
                               }
                               catch(e){
                                     console.log(e);
                               }
                               setBoard(chess.board());
                               // setMoves(message.payload.move);
-                              reset();
+                              setShouldResetCountdown(true);
                               setStarted(false);
                               console.log("Game over");
                               break;
                   }
             }
-      },[chess, socket, isActive, color, moveHist])
+      },[chess, socket, color, moveHist]);
+
+
+      // Reset the shouldResetCountdown flag after it's been used
+      useEffect(() => {
+            if (shouldResetCountdown) {
+                  setShouldResetCountdown(false);
+            }
+      }, [shouldResetCountdown]);
 
       if(!socket) return <div>Connecting...</div>
 
@@ -125,9 +147,10 @@ export const Game =() =>{
                         <div className="grid grid-cols-6 gap-4 w-full h-full">
                               
                               <div className="col-span-4 w-full flex mt-auto mb-auto ">
-                                    <ChessBoard socket={socket} color={color} chess={chess}
-                                    board = {board} setBoard={setBoard} 
-                                    moveHist={moveHist} setMoveHist={setMoveHist}/>
+                                    <ChessBoard 
+                                    socket={socket} color={color}
+                                    board = {board} 
+                                    />
                               </div>
 
                               <div className="bg-slate-900 col-span-2 flex justify-center">
@@ -142,13 +165,7 @@ export const Game =() =>{
                                                       Play Now
                                                 </Button>}
                                                 <div className="m-5">
-                                                <Countdown 
-                                                      initialMinutes={initialMinutes}
-                                                      seconds={seconds}
-                                                      isActive={isActive}
-                                                      onTick={onTick}
-                                                      onComplete={onComplete}
-                                                />
+                                                {countdownComponent}
                                                 </div>
                                           </div>
 
